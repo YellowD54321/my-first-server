@@ -1,0 +1,12 @@
+{
+    "name": "temperature",
+    "version": "1.0.0",
+    "description": "My first package.json",
+    "main": "app.js",
+    "dependencies": {
+        "axios": "^1.2.2",
+        "body-parser": "^1.20.1",
+        "cors": "^2.8.5",
+        "express": "4.x"
+    }
+}
