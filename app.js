@@ -117,25 +117,57 @@ app.post("/pay-by-card-token", (req, res, next) => {
     });
 });
 
-// app.get("/user/allen", (req, res) => {
-//   console.log("get api is called");
-//   res.send({
-//     data: "Hi Allen!",
-//   });
-// });
+app.post("/pay-by-line-pay", (req, res, next) => {
+  const url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime";
+  const prime = req.body.prime;
 
-// const favorite = {
-//   game: "zelda",
-//   music: "nujabes",
-// };
+  const post_header = {
+    "x-api-key": partnerKey,
+  };
 
-// app.post("/user/allen", (req, res) => {
-//   console.log("post api is called.");
-//   const answer = req.body.answer;
-//   const data = favorite[answer];
-//   console.log(answer);
-//   res.send(data);
-// });
+  const post_data = {
+    prime,
+    partner_key: partnerKey,
+    merchant_id: merchantId,
+    amount: 1,
+    currency: "TWD",
+    details: "This is paid by line pay.",
+    cardholder: {
+      phone_number: "+886923456789",
+      name: "王小明",
+      email: "LittleMing@Wang.com",
+      zip_code: "100",
+      address: "台北市天龍區芝麻街1號1樓",
+      national_id: "A123456789",
+    },
+    result_url: {
+      frontend_redirect_url: "http://localhost:3002/",
+      backend_notify_url: "http://localhost:3002/,",
+    },
+  };
+
+  // 以前端提供的prime向Tappay提出支付
+  axios
+    .post(url, post_data, {
+      headers: post_header,
+    })
+    .then((response) => {
+      const data = response.data;
+      const status = data.status;
+      console.log("pay-by-prime response", data);
+      // 支付失敗
+      if (status !== 0) {
+        return res.json({
+          result: data,
+        });
+      }
+      // 支付成功
+      // 若有回傳card_secret，將它儲存起來
+      return res.json({
+        result: data,
+      });
+    });
+});
 
 var server = app.listen(port, function () {
   console.log(`Listening on URL: http://localhost:${port}`);
